@@ -1,0 +1,23 @@
+.nav {
+ padding: 8px 24px;
+ display: flex;
+ }
+
+.container {
+ width: 100%;
+ max-width: 1200px;
+ margin: 0 auto;
+}
+
+.list {
+ list-style: none;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ width: 100%;
+}
+
+.menuNav {
+ display: flex;
+ gap: 16px;
+}
