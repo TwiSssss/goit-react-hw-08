@@ -1,6 +1,6 @@
-import {  createSlice, isAnyOf } from "@reduxjs/toolkit";
+import { createSlice, isAnyOf } from "@reduxjs/toolkit";
 import { fetchContacts, addContact, onDelete } from "./operations";
-
+import { logoutThunk } from "../auth/operations";
 
 const initialState = {
     items: [],
@@ -10,9 +10,7 @@ const initialState = {
 const slice = createSlice({
     name: "contacts",
     initialState,
-    reducers: {
-        setFavorites: () => {},
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder
             .addCase(onDelete.fulfilled, (state, action) => {
@@ -24,14 +22,18 @@ const slice = createSlice({
             .addCase(fetchContacts.fulfilled, (state, action) => {
                 state.items = action.payload;
             })
-            .addMatcher(isAnyOf(addContact.rejected, onDelete.rejected, fetchContacts.rejected), (state, action) => {
-                state.error = action.payload;
+            .addCase(logoutThunk.fulfilled, (state) => {
+                state.items = [];
             })
-            .addMatcher(isAnyOf(addContact.pending, onDelete.pending, fetchContacts.pending), (state, action) => {
+            .addMatcher(isAnyOf(addContact.rejected, onDelete.rejected, fetchContacts.rejected, logoutThunk.rejected), (state, action) => {
+                state.error = action.payload;
+                state.isLoading = false;
+            })
+            .addMatcher(isAnyOf(addContact.pending, onDelete.pending, fetchContacts.pending, logoutThunk.pending), (state) => {
                 state.error = null;
                 state.isLoading = true;
             })
-            .addMatcher(isAnyOf(addContact.fulfilled, onDelete.fulfilled, fetchContacts.fulfilled), (state, action) => {
+            .addMatcher(isAnyOf(addContact.fulfilled, onDelete.fulfilled, fetchContacts.fulfilled, logoutThunk.fulfilled), (state) => {
                 state.isLoading = false;
             });
     },
